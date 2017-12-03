@@ -1,4 +1,5 @@
 (() => {
+    //Get DOM elements
     const body = document.querySelector('body'),
         playerList = document.querySelector('ul'),
         o = playerList.firstElementChild,
@@ -6,8 +7,11 @@
         header = document.querySelector('header'),
         board = document.querySelector('.boxes'),
         boxes = board.children,
+        // Declare and Array of names to display in the dome
         playerNames = [];
     let counter = 0;
+
+    // This function creates the Player object
     function Player(playerId, icon) {
         this.playerId = playerId;
         this.icon = `url("img/${icon}.svg")`;
@@ -24,15 +28,18 @@
     }
 
 
-
+    // Create two players
     const player1 = new Player(1, 'o');
     const player2 = new Player(2, 'x');
+
+    // This object is used to active a two player game, one player game, and if the game has been won.
     const gamePlay = {
         isTwoPlayer: false,
         isOnePlayer: false,
         gameWon: false
     }
 
+    // Creates an overlay screen based on if the game is starting, if either player has one, or if it's a tie.
     function createOverlayscreen(screenType, id, buttonText) {
         const element = document.createElement('div'),
             header = document.createElement('header'),
@@ -50,46 +57,52 @@
         return element;
     }
 
+    function getPlayerName(id) {
+        let name = prompt(`Enter Player ${id}'s Name to proceed`);
+        
+        while (name === null || name === '') {
+            name = prompt('Enter Player 1\'s Name to proceed');
+        }
+        return name;
+    }
 
+    // This function starts the game
     function startGame() {
         const startGameDiv = createOverlayscreen('start', 'start', 'Two player game');
+        // creates the additional button for single play and appends it to the start overlay screen
         const onePlayerButton = document.createElement('a');
         onePlayerButton.classList.add('button');
         onePlayerButton.textContent = 'One player game';
         startGameDiv.children[0].appendChild(onePlayerButton);
+
+        // Creates the paragraph element that will hold the player name(s) and add a class to it
         const nameParagraph = document.createElement('p');
         nameParagraph.classList.add('player-name');
+
+        // Adds the start game div to the DOM
         body.appendChild(startGameDiv);
+
+        //Selects the two player button
         const twoPlayerButton = document.querySelector('a.button');
 
         twoPlayerButton.addEventListener('click', () => {
         
             gamePlay.isTwoPlayer = true;
             
-            let playerOneName = prompt('Enter Player 1\'s Name to proceed');
+            const playerOneName = getPlayerName(1);
+            const playerTwoName = getPlayerName(2);
             
-            while (playerOneName === null || playerOneName === '') {
-                playerOneName = prompt('Enter Player 1\'s Name to proceed');
-            }
-            let playerTwoName = prompt('Enter Player 2\'s Name to proceed');
-            while (playerTwoName === null || playerTwoName === '') {
-                playerTwoName = prompt('Enter Player 2\'s Name to proceed');
-            }
             playerNames.push(playerOneName, playerTwoName);
             
             nameParagraph.textContent = `${playerOneName} vs ${playerTwoName}`;
 
             header.appendChild(nameParagraph);
-
             body.removeChild(startGameDiv);
         });
         onePlayerButton.addEventListener('click', () => {
             gamePlay.isOnePlayer = true;
-            
-            let playerOneName = prompt('Enter Player 1\'s Name to proceed');
-            while (playerOneName === null || playerOneName === '') {
-                playerOneName = prompt('Enter Player 1\'s Name to proceed');
-            }
+
+            const playerOneName = getPlayerName(1);
             playerNames.push(playerOneName);
             
             nameParagraph.textContent = `${playerOneName} vs The Machine`;
@@ -181,14 +194,14 @@
                         emptySquares[square].classList.add('box-filled-2');
                         setTimeout(() => {
                             checkSquares(2);
-                        }, 200);
+                        }, 250);
                         player1.togglePlayerStatus();
                         player2.togglePlayerStatus();
                         x.classList.remove('active');
                         o.classList.add('active');
                         counter++;
                         
-                    }, 200);
+                    }, 250);
                     break;
                 }
 
@@ -202,21 +215,23 @@
         const boxesFilled = [];
         for (let i = 0; i <= 6; i += 3) {
             if (counter <= 9 && boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 1].classList.contains(`box-filled-${playerId}`) && boxes[i + 2].classList.contains(`box-filled-${playerId}`)) {
-                console.log(`Player ${playerId} wins`);
+               
                 gamePlay.gameWon = true;
                 gameOver(playerId);
             } 
         }
 
         for (let i = 0; i <= 2; i++) {
-            console.log(boxes[i]);
-            console.log(boxes[i + 3]);
-            console.log(boxes[i + 6]);
+            if (counter <= 9 && boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 3].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
+                
+                gamePlay.gameWon = true;
+                gameOver(playerId);
+            } 
         }
 
         for (let i = 0; i <= 1; i += 4) {
             if (counter <= 9 && boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 8].classList.contains(`box-filled-${playerId}`)) {
-                console.log(`Player ${playerId} wins`);
+                
                 gameOver(playerId);
             }
         
@@ -224,7 +239,7 @@
 
         for (let i = 0; i <= 1; i += 2) {
             if (counter <= 9 && boxes[i + 2].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
-                console.log(`Player ${playerId} wins`);
+                
                 gameOver(playerId);
             }
           
