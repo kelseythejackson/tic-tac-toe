@@ -139,3 +139,42 @@ h1 {
       background-image: url(../img/x.svg); }
 
 
+.player-name-input {
+  background: transparent;
+  border-width: 0;
+  border-bottom: 1.5px solid #ffffff;
+  color: #ffffff;
+  display: block;
+  margin: 40px auto;
+  padding: 8px;
+  transition: .3s;
+
+}
+
+.player-name-input:focus {
+  outline: 0;
+  background: rgba(255, 255, 255, .25);
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: #ffffff;
+}
+::-moz-placeholder { /* Firefox 19+ */
+   color: #ffffff;
+}
+:-ms-input-placeholder { /* IE 10+ */
+   color: #ffffff;
+}
+:-moz-placeholder { /* Firefox 18- */
+   color: #ffffff;
+}
+
+.player-name {
+  margin: 40px auto 24px;
+  text-align: center;
+}
+.button {
+  display: block;
+  max-width: 230px;
+  margin: 0 auto 24px;
+}
