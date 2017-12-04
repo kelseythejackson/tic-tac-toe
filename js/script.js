@@ -111,13 +111,11 @@
             body.removeChild(startGameDiv);
         });
 
-
         player1.togglePlayerStatus();
         if (player1.isActive) {
             o.classList.add('active');
 
         }
-
     }
     function buildGameOverScreen(screenType, playerIndex, player) {
         const gameOverScreen = createOverlayscreen('win', 'finish', 'New game');
@@ -134,9 +132,7 @@
         const newGameButton = document.querySelector('a.button');
         newGameButton.addEventListener('click', () => {
             location.reload(true);
-
         });
-        
     }
     function gameOver(playerId) {
         
@@ -153,9 +149,6 @@
                 buildGameOverScreen('two', 1, 'player2');
             }
         }
-
-
-        
     }
     function tieGame() {
         const tieGameScreen = createOverlayscreen('win', 'finish', 'New game');
@@ -196,7 +189,7 @@
                         o.classList.add('active');
                         counter++;
                         
-                    }, 250);
+                    }, 500);
                     break;
                 }
 
@@ -212,6 +205,9 @@
             if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 1].classList.contains(`box-filled-${playerId}`) && boxes[i + 2].classList.contains(`box-filled-${playerId}`)) {
                
                 gamePlay.gameWon = true;
+                if(playerId === 1) {
+                    player1.didWin = true;
+                }
                 gameOver(playerId);
             } 
         }
@@ -220,6 +216,9 @@
             if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 3].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
                 
                 gamePlay.gameWon = true;
+                if(playerId === 1) {
+                    player1.didWin = true;
+                }
                 gameOver(playerId);
             } 
         }
@@ -227,6 +226,9 @@
         for (let i = 0; i <= 1; i += 4) {
             if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 8].classList.contains(`box-filled-${playerId}`)) {
                 gamePlay.gameWon = true;
+                if(playerId === 1) {
+                    player1.didWin = true;
+                }
                 gameOver(playerId);
             }
         
@@ -235,6 +237,9 @@
         for (let i = 0; i <= 1; i += 2) {
             if (boxes[i + 2].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
                 gamePlay.gameWon = true;
+                if(playerId === 1) {
+                    player1.didWin = true;
+                }
                 gameOver(playerId);
             }
         }
@@ -244,7 +249,6 @@
                 boxesFilled.push(boxes[i]);
             }
             if(boxesFilled.length === 9 && !gamePlay.gameWon) {
-                console.log(gamePlay.gameWon);
                 tieGame();
             }
         }
@@ -252,15 +256,26 @@
     }
     board.addEventListener('mouseover', (e) => {
         if (e.target.tagName === 'LI') {
-            if (player1.isActive) {
-                if (e.target.classList.length < 2) {
-                    e.target.style.backgroundImage = player1.icon;
+            if(gamePlay.isTwoPlayer) {
+                if (player1.isActive) {
+                    if (e.target.classList.length < 2) {
+                        e.target.style.backgroundImage = player1.icon;
+                    }
+                } else if (player2.isActive) {
+                    if (e.target.classList.length < 2) {
+                        e.target.style.backgroundImage = player2.icon;
+                    }
                 }
-            } else if (player2.isActive) {
-                if (e.target.classList.length < 2) {
-                    e.target.style.backgroundImage = player2.icon;
+            } if(gamePlay.isOnePlayer) {
+                if (player1.isActive) {
+                    if (e.target.classList.length < 2) {
+                        e.target.style.backgroundImage = player1.icon;
+                    }
+                } else {
+                    e.target.style.backgroundImage = '';
                 }
             }
+            
         }
     });
 
