@@ -59,7 +59,6 @@
 
     function getPlayerName(id) {
         let name = prompt(`Enter Player ${id}'s Name to proceed`);
-        
         while (name === null || name === '') {
             name = prompt('Enter Player 1\'s Name to proceed');
         }
@@ -86,7 +85,6 @@
         const twoPlayerButton = document.querySelector('a.button');
 
         twoPlayerButton.addEventListener('click', () => {
-        
             gamePlay.isTwoPlayer = true;
             
             const playerOneName = getPlayerName(1);
@@ -135,7 +133,6 @@
         });
     }
     function gameOver(playerId) {
-        
         if (gamePlay.isTwoPlayer) {
             if (playerId === 1) {
                 buildGameOverScreen('one', 0, 'player1'); 
@@ -187,23 +184,18 @@
                         player2.togglePlayerStatus();
                         x.classList.remove('active');
                         o.classList.add('active');
-                        counter++;
-                        
+                        counter++;  
                     }, 500);
                     break;
                 }
-
             }
         }
-      
-
     }
 
     function checkSquares(playerId) {
         const boxesFilled = [];
         for (let i = 0; i <= 6; i += 3) {
             if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 1].classList.contains(`box-filled-${playerId}`) && boxes[i + 2].classList.contains(`box-filled-${playerId}`)) {
-               
                 gamePlay.gameWon = true;
                 if(playerId === 1) {
                     player1.didWin = true;
@@ -214,7 +206,6 @@
 
         for (let i = 0; i <= 2; i++) {
             if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 3].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
-                
                 gamePlay.gameWon = true;
                 if(playerId === 1) {
                     player1.didWin = true;
