@@ -119,47 +119,43 @@
         }
 
     }
-    function gameOver(playerId) {
+    function buildGameOverScreen(screenType, playerIndex, player) {
         const gameOverScreen = createOverlayscreen('win', 'finish', 'New game');
         const message = document.createElement('p');
-        if (gamePlay.isTwoPlayer) {
-            if (playerId === 1) {
-
-                gameOverScreen.classList.add(`screen-win-one`);
-                message.textContent = `${playerNames[0]} Wins`;
-                gameOverScreen.children[0].insertBefore(message, gameOverScreen.children[0].lastElementChild);
-                player1.didWin = true;
-                
-            } else if (playerId === 2) {
-                gameOverScreen.classList.add(`screen-win-two`);
-                message.textContent = `${playerNames[1]} Wins`;
-                gameOverScreen.children[0].insertBefore(message, gameOverScreen.children[0].lastElementChild);
-                player2.didWin = true;
-                ;
-            }
-        } else if (gamePlay.isOnePlayer) {
-            if (playerId === 1) {
-                gameOverScreen.classList.add(`screen-win-one`);
-                message.textContent = `${playerNames[0]} Wins`;
-                gameOverScreen.children[0].insertBefore(message, gameOverScreen.children[0].lastElementChild);
-                player1.didWin = true;
-                
-            } else if (playerId === 2) {
-                gameOverScreen.classList.add(`screen-win-two`);
-                message.textContent = 'The Machine Wins';
-                gameOverScreen.children[0].insertBefore(message, gameOverScreen.children[0].lastElementChild);
-                player2.didWin = true;
-                
-            }
+        gameOverScreen.classList.add(`screen-win-${screenType}`);
+        if(gamePlay.isOnePlayer && !player1.didWin){
+            message.textContent = `The Machine Wins`;
+        } else {
+            message.textContent = `${playerNames[playerIndex]} Wins`;
         }
-
-
+        
+        gameOverScreen.children[0].insertBefore(message, gameOverScreen.children[0].lastElementChild);
         body.appendChild(gameOverScreen);
         const newGameButton = document.querySelector('a.button');
         newGameButton.addEventListener('click', () => {
             location.reload(true);
 
         });
+        
+    }
+    function gameOver(playerId) {
+        
+        if (gamePlay.isTwoPlayer) {
+            if (playerId === 1) {
+                buildGameOverScreen('one', 0, 'player1'); 
+            } else if (playerId === 2) {
+                buildGameOverScreen('two', 1, 'player2');
+            }
+        } else if (gamePlay.isOnePlayer) {
+            if (playerId === 1) {
+                buildGameOverScreen('one', 0, 'player1'); 
+            } else if (playerId === 2) {
+                buildGameOverScreen('two', 1, 'player2');
+            }
+        }
+
+
+        
     }
     function tieGame() {
         const tieGameScreen = createOverlayscreen('win', 'finish', 'New game');
@@ -189,7 +185,6 @@
                 let square = (Math.floor(Math.random() * emptySquares.length));
                
                 if (!player1.didWin) {
-                    
                     setTimeout(() => {
                         emptySquares[square].classList.add('box-filled-2');
                         setTimeout(() => {
@@ -214,7 +209,7 @@
     function checkSquares(playerId) {
         const boxesFilled = [];
         for (let i = 0; i <= 6; i += 3) {
-            if (counter <= 9 && boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 1].classList.contains(`box-filled-${playerId}`) && boxes[i + 2].classList.contains(`box-filled-${playerId}`)) {
+            if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 1].classList.contains(`box-filled-${playerId}`) && boxes[i + 2].classList.contains(`box-filled-${playerId}`)) {
                
                 gamePlay.gameWon = true;
                 gameOver(playerId);
@@ -222,7 +217,7 @@
         }
 
         for (let i = 0; i <= 2; i++) {
-            if (counter <= 9 && boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 3].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
+            if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 3].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
                 
                 gamePlay.gameWon = true;
                 gameOver(playerId);
@@ -230,19 +225,18 @@
         }
 
         for (let i = 0; i <= 1; i += 4) {
-            if (counter <= 9 && boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 8].classList.contains(`box-filled-${playerId}`)) {
-                
+            if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 8].classList.contains(`box-filled-${playerId}`)) {
+                gamePlay.gameWon = true;
                 gameOver(playerId);
             }
         
         }
 
         for (let i = 0; i <= 1; i += 2) {
-            if (counter <= 9 && boxes[i + 2].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
-                
+            if (boxes[i + 2].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
+                gamePlay.gameWon = true;
                 gameOver(playerId);
             }
-          
         }
 
         for (let i = 0; i < boxes.length; i++) {
@@ -250,6 +244,7 @@
                 boxesFilled.push(boxes[i]);
             }
             if(boxesFilled.length === 9 && !gamePlay.gameWon) {
+                console.log(gamePlay.gameWon);
                 tieGame();
             }
         }
