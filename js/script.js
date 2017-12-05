@@ -9,7 +9,6 @@
         boxes = board.children,
         // Declare and Array of names to display in the dome
         playerNames = [];
-    let counter = 0;
 
     // This function creates the Player object
     function Player(playerId, icon) {
@@ -17,16 +16,7 @@
         this.icon = `url("img/${icon}.svg")`;
         this.isActive = false;
         this.didWin = false;
-        this.togglePlayerStatus = () => {
-            if (!this.isActive) {
-                this.isActive = true;
-                return this.isActive;
-            } else {
-                this.isActive = false;
-            }
-        };
     }
-
 
     // Create two players
     const player1 = new Player(1, 'o');
@@ -36,7 +26,27 @@
     const gamePlay = {
         isTwoPlayer: false,
         isOnePlayer: false,
-        gameWon: false
+        isTie: false
+    }
+
+    function togglePlayerStatus() {
+        if (!player1.isActive) {
+            player1.isActive = true;
+            o.classList.add('active');
+            if (player2.isActive && x.classList.contains('active')) {
+                player2.isActive = false;
+                x.classList.remove('active');
+            }
+            console.log(`player 1 is active: ${player1.isActive}`);
+        } else if (!player2.isActive) {
+            player2.isActive = true;
+            x.classList.add('active');
+            if (player1.isActive && o.classList.contains('active')) {
+                player1.isActive = false;
+                o.classList.remove('active');
+            }
+            console.log(`player 2 is active: ${player2.isActive}`);
+        }
     }
 
     // Creates an overlay screen based on if the game is starting, if either player has one, or if it's a tie.
@@ -86,12 +96,12 @@
 
         twoPlayerButton.addEventListener('click', () => {
             gamePlay.isTwoPlayer = true;
-            
+
             const playerOneName = getPlayerName(1);
             const playerTwoName = getPlayerName(2);
-            
+
             playerNames.push(playerOneName, playerTwoName);
-            
+
             nameParagraph.textContent = `${playerOneName} vs ${playerTwoName}`;
 
             header.appendChild(nameParagraph);
@@ -102,89 +112,75 @@
 
             const playerOneName = getPlayerName(1);
             playerNames.push(playerOneName);
-            
+
             nameParagraph.textContent = `${playerOneName} vs The Machine`;
             header.appendChild(nameParagraph);
 
             body.removeChild(startGameDiv);
         });
 
-        player1.togglePlayerStatus();
-        if (player1.isActive) {
-            o.classList.add('active');
-
-        }
+        togglePlayerStatus();
     }
-    function buildGameOverScreen(screenType, playerIndex, player) {
+    function buildGameOverScreen(screenType, playerIndex) {
         const gameOverScreen = createOverlayscreen('win', 'finish', 'New game');
         const message = document.createElement('p');
         gameOverScreen.classList.add(`screen-win-${screenType}`);
-        if(gamePlay.isOnePlayer && !player1.didWin){
-            message.textContent = `The Machine Wins`;
-        } else {
+        if (gamePlay.isTie) {
+            message.textContent = 'Tie Game';
+        } else if (gamePlay.isTwoPlayer && !gamePlay.isTie) {
             message.textContent = `${playerNames[playerIndex]} Wins`;
+        } else if (gamePlay.isOnePlayer && player1.didWin) {
+            message.textContent = `${playerNames[playerIndex]} Wins`;
+        } else if (gamePlay.isOnePlayer && player2.didWin) {
+            message.textContent = 'The Machine Wins';
         }
-        
+
         gameOverScreen.children[0].insertBefore(message, gameOverScreen.children[0].lastElementChild);
         body.appendChild(gameOverScreen);
         const newGameButton = document.querySelector('a.button');
         newGameButton.addEventListener('click', () => {
-            location.reload(true);
+            location.reload();
         });
     }
     function gameOver(playerId) {
         if (gamePlay.isTwoPlayer) {
             if (playerId === 1) {
-                buildGameOverScreen('one', 0, 'player1'); 
+                buildGameOverScreen('one', 0);
             } else if (playerId === 2) {
-                buildGameOverScreen('two', 1, 'player2');
+                buildGameOverScreen('two', 1);
             }
         } else if (gamePlay.isOnePlayer) {
             if (playerId === 1) {
-                buildGameOverScreen('one', 0, 'player1'); 
+                buildGameOverScreen('one', 0);
             } else if (playerId === 2) {
-                buildGameOverScreen('two', 1, 'player2');
+                buildGameOverScreen('two', 1);
             }
         }
     }
     function tieGame() {
-        const tieGameScreen = createOverlayscreen('win', 'finish', 'New game');
-        const message = document.createElement('p');
-        tieGameScreen.classList.add('screen-win-tie');
-        message.textContent = 'Tie Game';
-        tieGameScreen.children[0].insertBefore(message, tieGameScreen.children[0].lastElementChild);
-        body.appendChild(tieGameScreen);
-        const newGameButton = document.querySelector('a.button');
-        newGameButton.addEventListener('click', () => {
-            location.reload();
-        });
-        
+        buildGameOverScreen('tie')
     }
 
     function ComputerAI() {
         let emptySquares = [];
         if (player2.isActive) {
-            
+
             for (let i = 0; i < boxes.length; i++) {
                 if (boxes[i].classList.length < 2) {
                     emptySquares.push(boxes[i]);
                 }
             }
-          
+
             for (let e = 0; e < emptySquares.length; e++) {
                 let square = (Math.floor(Math.random() * emptySquares.length));
-               
+
                 if (!player1.didWin) {
                     setTimeout(() => {
                         emptySquares[square].classList.add('box-filled-2');
                         setTimeout(() => {
                             checkSquares(2);
                         }, 250);
-                        player1.togglePlayerStatus();
-                        player2.togglePlayerStatus();
-                        x.classList.remove('active');
-                        o.classList.add('active');
-                        counter++;  
+                        togglePlayerStatus();
                     }, 500);
                     break;
                 }
@@ -192,62 +188,40 @@
         }
     }
 
+    function loopOverBoxes(end, iterator, playerId, num1, num2, num3) {
+        for (let i = 0; i <= end; i += iterator) {
+            if (boxes[i + num1].classList.contains(`box-filled-${playerId}`) && boxes[i + num2].classList.contains(`box-filled-${playerId}`) && boxes[i + num3].classList.contains(`box-filled-${playerId}`)) {
+                if (playerId === 1) {
+                    player1.didWin = true;
+                } else if (playerId === 2) {
+                    player2.didWin = true;
+                }
+                gameOver(playerId);
+            }
+        }
+    }
+
     function checkSquares(playerId) {
         const boxesFilled = [];
-        for (let i = 0; i <= 6; i += 3) {
-            if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 1].classList.contains(`box-filled-${playerId}`) && boxes[i + 2].classList.contains(`box-filled-${playerId}`)) {
-                gamePlay.gameWon = true;
-                if(playerId === 1) {
-                    player1.didWin = true;
-                }
-                gameOver(playerId);
-            } 
-        }
-
-        for (let i = 0; i <= 2; i++) {
-            if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 3].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
-                gamePlay.gameWon = true;
-                if(playerId === 1) {
-                    player1.didWin = true;
-                }
-                gameOver(playerId);
-            } 
-        }
-
-        for (let i = 0; i <= 1; i += 4) {
-            if (boxes[i].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 8].classList.contains(`box-filled-${playerId}`)) {
-                gamePlay.gameWon = true;
-                if(playerId === 1) {
-                    player1.didWin = true;
-                }
-                gameOver(playerId);
-            }
-        
-        }
-
-        for (let i = 0; i <= 1; i += 2) {
-            if (boxes[i + 2].classList.contains(`box-filled-${playerId}`) && boxes[i + 4].classList.contains(`box-filled-${playerId}`) && boxes[i + 6].classList.contains(`box-filled-${playerId}`)) {
-                gamePlay.gameWon = true;
-                if(playerId === 1) {
-                    player1.didWin = true;
-                }
-                gameOver(playerId);
-            }
-        }
+        loopOverBoxes(6, 3, playerId, 0, 1, 2);
+        loopOverBoxes(2, 1, playerId, 0, 3, 6);
+        loopOverBoxes(1, 4, playerId, 0, 4, 8);
+        loopOverBoxes(1, 2, playerId, 2, 4, 6);
 
         for (let i = 0; i < boxes.length; i++) {
-            if(boxes[i].classList.length === 2) {
+            if (boxes[i].classList.length === 2) {
                 boxesFilled.push(boxes[i]);
             }
-            if(boxesFilled.length === 9 && !gamePlay.gameWon) {
+            if (boxesFilled.length === 9 && !player1.didWin && !player2.didWin) {
+                gamePlay.isTie = true;
                 tieGame();
             }
         }
-        
+
     }
     board.addEventListener('mouseover', (e) => {
         if (e.target.tagName === 'LI') {
-            if(gamePlay.isTwoPlayer) {
+            if (gamePlay.isTwoPlayer) {
                 if (player1.isActive) {
                     if (e.target.classList.length < 2) {
                         e.target.style.backgroundImage = player1.icon;
@@ -257,7 +231,7 @@
                         e.target.style.backgroundImage = player2.icon;
                     }
                 }
-            } if(gamePlay.isOnePlayer) {
+            } if (gamePlay.isOnePlayer) {
                 if (player1.isActive) {
                     if (e.target.classList.length < 2) {
                         e.target.style.backgroundImage = player1.icon;
@@ -266,7 +240,7 @@
                     e.target.style.backgroundImage = '';
                 }
             }
-            
+
         }
     });
 
@@ -289,39 +263,26 @@
                 if (player1.isActive) {
                     if (e.target.classList.length < 2) {
                         e.target.classList.add('box-filled-1');
-                        o.classList.remove('active');
-                        x.classList.add('active');
-                        counter++;
                         checkSquares(1);
-                        player1.togglePlayerStatus();
-                        player2.togglePlayerStatus();
+                        togglePlayerStatus();
                     }
                 } else if (player2.isActive) {
                     if (e.target.classList.length < 2) {
                         e.target.classList.add('box-filled-2');
-                        x.classList.remove('active');
-                        o.classList.add('active');
-                        counter++;
                         checkSquares(2);
-                        player2.togglePlayerStatus();
-                        player1.togglePlayerStatus();
+                        togglePlayerStatus();
                     }
                 }
             } else if (gamePlay.isOnePlayer) {
                 if (player1.isActive) {
                     if (e.target.classList.length < 2) {
                         e.target.classList.add('box-filled-1');
-                        o.classList.remove('active');
-                        x.classList.add('active');
-                        counter++;
                         checkSquares(1);
-                        player1.togglePlayerStatus();
-                        player2.togglePlayerStatus();
+                        togglePlayerStatus();
                         ComputerAI();
                     }
                 }
             }
-
         }
     });
 
