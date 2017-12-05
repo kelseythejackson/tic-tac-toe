@@ -7,11 +7,9 @@
         header = document.querySelector('header'),
         board = document.querySelector('.boxes'),
         boxes = board.children,
-        // Declare and Array of names to display in the dome
-        playerNames = [];
+        playerNames = []; // Declare and Array of names to display in the dome
 
-    // This function creates the Player object
-    function Player(playerId, icon) {
+    function Player(playerId, icon) { // This function creates the Player object
         this.playerId = playerId;
         this.icon = `url("img/${icon}.svg")`;
         this.isActive = false;
@@ -22,8 +20,7 @@
     const player1 = new Player(1, 'o');
     const player2 = new Player(2, 'x');
 
-    // This object is used to active a two player game, one player game, and if the game has been won.
-    const gamePlay = {
+    const gamePlay = { // This object is used to active a two player game, one player game, and if the game has been won.
         isTwoPlayer: false,
         isOnePlayer: false,
         isTie: false
@@ -49,8 +46,7 @@
         }
     }
 
-    // Creates an overlay screen based on if the game is starting, if either player has one, or if it's a tie.
-    function createOverlayscreen(screenType, id, buttonText) {
+    function createOverlayscreen(screenType, id, buttonText) { // Creates an overlay screen based on if the game is starting, if either player has one, or if it's a tie.
         const element = document.createElement('div'),
             header = document.createElement('header'),
             h1 = document.createElement('h1'),
@@ -75,8 +71,7 @@
         return name;
     }
 
-    // This function starts the game
-    function startGame() {
+    function startGame() { // This function starts the game
         const startGameDiv = createOverlayscreen('start', 'start', 'Two player game');
         // creates the additional button for single play and appends it to the start overlay screen
         const onePlayerButton = document.createElement('a');
@@ -121,6 +116,7 @@
 
         togglePlayerStatus();
     }
+
     function buildGameOverScreen(screenType, playerIndex) {
         const gameOverScreen = createOverlayscreen('win', 'finish', 'New game');
         const message = document.createElement('p');
@@ -142,6 +138,7 @@
             location.reload();
         });
     }
+
     function gameOver(playerId) {
         if (gamePlay.isTwoPlayer) {
             if (playerId === 1) {
@@ -157,35 +154,9 @@
             }
         }
     }
+
     function tieGame() {
         buildGameOverScreen('tie')
-    }
-
-    function ComputerAI() {
-        let emptySquares = [];
-        if (player2.isActive) {
-
-            for (let i = 0; i < boxes.length; i++) {
-                if (boxes[i].classList.length < 2) {
-                    emptySquares.push(boxes[i]);
-                }
-            }
-
-            for (let e = 0; e < emptySquares.length; e++) {
-                let square = (Math.floor(Math.random() * emptySquares.length));
-
-                if (!player1.didWin) {
-                    setTimeout(() => {
-                        emptySquares[square].classList.add('box-filled-2');
-                        setTimeout(() => {
-                            checkSquares(2);
-                        }, 250);
-                        togglePlayerStatus();
-                    }, 500);
-                    break;
-                }
-            }
-        }
     }
 
     function loopOverBoxes(end, iterator, playerId, num1, num2, num3) {
@@ -202,12 +173,12 @@
     }
 
     function checkSquares(playerId) {
-        const boxesFilled = [];
         loopOverBoxes(6, 3, playerId, 0, 1, 2);
         loopOverBoxes(2, 1, playerId, 0, 3, 6);
         loopOverBoxes(1, 4, playerId, 0, 4, 8);
         loopOverBoxes(1, 2, playerId, 2, 4, 6);
 
+        const boxesFilled = [];
         for (let i = 0; i < boxes.length; i++) {
             if (boxes[i].classList.length === 2) {
                 boxesFilled.push(boxes[i]);
@@ -217,8 +188,33 @@
                 tieGame();
             }
         }
-
     }
+
+    function ComputerAI() {
+        let emptySquares = [];
+        if (player2.isActive) {
+            for (let i = 0; i < boxes.length; i++) {
+                if (boxes[i].classList.length < 2) {
+                    emptySquares.push(boxes[i]);
+                }
+            }
+
+            for (let e = 0; e < emptySquares.length; e++) {
+                let square = (Math.floor(Math.random() * emptySquares.length));
+                if (!player1.didWin) {
+                    setTimeout(() => {
+                        emptySquares[square].classList.add('box-filled-2');
+                        setTimeout(() => {
+                            checkSquares(2);
+                        }, 250);
+                        togglePlayerStatus();
+                    }, 500);
+                    break;
+                }
+            }
+        }
+    }
+
     board.addEventListener('mouseover', (e) => {
         if (e.target.tagName === 'LI') {
             if (gamePlay.isTwoPlayer) {
@@ -240,7 +236,6 @@
                     e.target.style.backgroundImage = '';
                 }
             }
-
         }
     });
 
@@ -257,6 +252,7 @@
             }
         }
     });
+
     board.addEventListener('click', (e) => {
         if (e.target.tagName === 'LI') {
             if (gamePlay.isTwoPlayer) {
