@@ -26,7 +26,7 @@
         isTie: false
     }
 
-    function togglePlayerStatus() {
+    function togglePlayerStatus() { // Checks the players status and sets the 'active class to the appropriate element'
         if (!player1.isActive) {
             player1.isActive = true;
             o.classList.add('active');
@@ -34,7 +34,6 @@
                 player2.isActive = false;
                 x.classList.remove('active');
             }
-            console.log(`player 1 is active: ${player1.isActive}`);
         } else if (!player2.isActive) {
             player2.isActive = true;
             x.classList.add('active');
@@ -42,7 +41,6 @@
                 player1.isActive = false;
                 o.classList.remove('active');
             }
-            console.log(`player 2 is active: ${player2.isActive}`);
         }
     }
 
@@ -63,7 +61,7 @@
         return element;
     }
 
-    function getPlayerName(id) {
+    function getPlayerName(id) { // prompts the players name so it can be displayed on the board and at the end of the game.
         let name = prompt(`Enter Player ${id}'s Name to proceed`);
         while (name === null || name === '') {
             name = prompt('Enter Player 1\'s Name to proceed');
@@ -89,7 +87,7 @@
         //Selects the two player button
         const twoPlayerButton = document.querySelector('a.button');
 
-        twoPlayerButton.addEventListener('click', () => {
+        twoPlayerButton.addEventListener('click', () => { // Activates two player gameplay
             gamePlay.isTwoPlayer = true;
 
             const playerOneName = getPlayerName(1);
@@ -102,7 +100,7 @@
             header.appendChild(nameParagraph);
             body.removeChild(startGameDiv);
         });
-        onePlayerButton.addEventListener('click', () => {
+        onePlayerButton.addEventListener('click', () => { // Activates one player gameplay
             gamePlay.isOnePlayer = true;
 
             const playerOneName = getPlayerName(1);
@@ -117,7 +115,7 @@
         togglePlayerStatus();
     }
 
-    function buildGameOverScreen(screenType, playerIndex) {
+    function buildGameOverScreen(screenType, playerIndex) { // Dynamically builds the game ending screen
         const gameOverScreen = createOverlayscreen('win', 'finish', 'New game');
         const message = document.createElement('p');
         gameOverScreen.classList.add(`screen-win-${screenType}`);
@@ -139,7 +137,7 @@
         });
     }
 
-    function gameOver(playerId) {
+    function gameOver(playerId) { // Calls the 'build screen' function with the appropriate arguments
         if (gamePlay.isTwoPlayer) {
             if (playerId === 1) {
                 buildGameOverScreen('one', 0);
@@ -155,11 +153,11 @@
         }
     }
 
-    function tieGame() {
+    function tieGame() { // Calls the 'build screen' function for a tie game
         buildGameOverScreen('tie')
     }
 
-    function loopOverBoxes(end, iterator, playerId, num1, num2, num3) {
+    function loopOverBoxes(end, iterator, playerId, num1, num2, num3) { //loops over the boxes on the board to check if a winner has been declared.
         for (let i = 0; i <= end; i += iterator) {
             if (boxes[i + num1].classList.contains(`box-filled-${playerId}`) && boxes[i + num2].classList.contains(`box-filled-${playerId}`) && boxes[i + num3].classList.contains(`box-filled-${playerId}`)) {
                 if (playerId === 1) {
@@ -173,24 +171,24 @@
     }
 
     function checkSquares(playerId) {
-        loopOverBoxes(6, 3, playerId, 0, 1, 2);
-        loopOverBoxes(2, 1, playerId, 0, 3, 6);
-        loopOverBoxes(1, 4, playerId, 0, 4, 8);
-        loopOverBoxes(1, 2, playerId, 2, 4, 6);
+        loopOverBoxes(6, 3, playerId, 0, 1, 2); // Checks the rows
+        loopOverBoxes(2, 1, playerId, 0, 3, 6); // Checks the columns
+        loopOverBoxes(1, 4, playerId, 0, 4, 8); // Checks the first diagonal
+        loopOverBoxes(1, 2, playerId, 2, 4, 6); // Checks the second diagonal
 
-        const boxesFilled = [];
-        for (let i = 0; i < boxes.length; i++) {
-            if (boxes[i].classList.length === 2) {
+        const boxesFilled = []; // creates an array to hold the boxes that have been filled
+        for (let i = 0; i < boxes.length; i++) { 
+            if (boxes[i].classList.length === 2) { // checks if a box has a 'filled' class and adds it to the boxesFilled array
                 boxesFilled.push(boxes[i]);
             }
-            if (boxesFilled.length === 9 && !player1.didWin && !player2.didWin) {
+            if (boxesFilled.length === 9 && !player1.didWin && !player2.didWin) { // if the boxes filled array equals 9 and a player hasn't won yet, call the tie game function
                 gamePlay.isTie = true;
                 tieGame();
             }
         }
     }
 
-    function ComputerAI() {
+    function ComputerAI() {// the computer player functionality
         let emptySquares = [];
         if (player2.isActive) {
             for (let i = 0; i < boxes.length; i++) {
@@ -215,7 +213,7 @@
         }
     }
 
-    board.addEventListener('mouseover', (e) => {
+    board.addEventListener('mouseover', (e) => { // mouseover functionality
         if (e.target.tagName === 'LI') {
             if (gamePlay.isTwoPlayer) {
                 if (player1.isActive) {
@@ -239,7 +237,7 @@
         }
     });
 
-    board.addEventListener('mouseout', (e) => {
+    board.addEventListener('mouseout', (e) => { // mouseout functionality
         if (e.target.tagName === 'LI') {
             if (player1.isActive) {
                 if (e.target.classList.length < 2) {
@@ -253,7 +251,7 @@
         }
     });
 
-    board.addEventListener('click', (e) => {
+    board.addEventListener('click', (e) => { // click functionality
         if (e.target.tagName === 'LI') {
             if (gamePlay.isTwoPlayer) {
                 if (player1.isActive) {
@@ -282,6 +280,6 @@
         }
     });
 
-    startGame();
+    startGame(); // Start the game
 
 })();
